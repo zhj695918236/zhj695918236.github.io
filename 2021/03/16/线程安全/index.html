@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>一文教会你什么线程安全以及如何实现线程安全 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="一、线程安全的概念线程安全是多线程编程是的计算机程序代码中的一个概念。在拥有共享数据的多条线程并行执行的程序中，线程安全的代码会通过同步机制保证各个线程都可以正常且准确的执行，不会出现数据污染等意外情况。上述是百度百科给出的一个概念解释。换言之，线程安全就是某个函数在并发环境中调用时，能够处理好多个线程之间的共享变量，是程序能够正确执行完毕。也就是说我们想要确保在多线程访问的时候，我们的程序还能够">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一文教会你什么线程安全以及如何实现线程安全">
+<meta property="og:url" content="http://example.com/2021/03/16/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="一、线程安全的概念线程安全是多线程编程是的计算机程序代码中的一个概念。在拥有共享数据的多条线程并行执行的程序中，线程安全的代码会通过同步机制保证各个线程都可以正常且准确的执行，不会出现数据污染等意外情况。上述是百度百科给出的一个概念解释。换言之，线程安全就是某个函数在并发环境中调用时，能够处理好多个线程之间的共享变量，是程序能够正确执行完毕。也就是说我们想要确保在多线程访问的时候，我们的程序还能够">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwgy1glphqevjy9j30jk08kwff.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwgy1glpivib4qpj30b60a8q2v.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1glpm1eai2pj30hd0343yc.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1glpm9qzezrj30ce0b73z4.jpg">
+<meta property="article:published_time" content="2021-03-16T05:28:59.501Z">
+<meta property="article:modified_time" content="2021-03-16T05:28:59.501Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="线程安全 Java并发 Java内存模型 synchronized volatile Lock">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/0081Kckwgy1glphqevjy9j30jk08kwff.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-线程安全" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2021/03/16/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/" class="article-date">
+  <time class="dt-published" datetime="2021-03-16T05:28:59.501Z" itemprop="datePublished">2021-03-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      一文教会你什么线程安全以及如何实现线程安全
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="一、线程安全的概念"><a href="#一、线程安全的概念" class="headerlink" title="一、线程安全的概念"></a>一、线程安全的概念</h3><p>线程安全是多线程编程是的计算机程序代码中的一个概念。在拥有共享数据的多条线程并行执行的程序中，线程安全的代码会通过同步机制保证各个线程都可以正常且准确的执行，不会出现数据污染等意外情况。上述是百度百科给出的一个概念解释。换言之，线程安全就是某个函数在并发环境中调用时，能够处理好多个线程之间的共享变量，是程序能够正确执行完毕。也就是说我们想要确保在多线程访问的时候，我们的程序还能够按照我们的预期的行为去执行，那么就是线程安全了。</p>
+<span id="more"></span>
+
+<h3 id="二、导致线程不安全的原因"><a href="#二、导致线程不安全的原因" class="headerlink" title="二、导致线程不安全的原因"></a>二、导致线程不安全的原因</h3><p>首先，可以来看一段代码，来看看是不是线程安全的，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.company;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestThread</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">XRunnable</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> count;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i= <span class="number">0</span>; i&lt;<span class="number">5</span>; i++)&#123;</span><br><span class="line">                getCount();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getCount</span><span class="params">()</span></span>&#123;</span><br><span class="line">            count++;</span><br><span class="line">            System.out.println(<span class="string">&quot; &quot;</span>+count);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        XRunnable runnable = <span class="keyword">new</span> XRunnable();</span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(runnable);</span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(runnable);</span><br><span class="line">        Thread t3 = <span class="keyword">new</span> Thread(runnable);</span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">        t3.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>输出的结果为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">3</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">5</span></span><br><span class="line"><span class="number">4</span></span><br><span class="line"><span class="number">7</span></span><br><span class="line"><span class="number">6</span></span><br><span class="line"><span class="number">10</span></span><br><span class="line"><span class="number">11</span></span><br><span class="line"><span class="number">12</span></span><br><span class="line"><span class="number">9</span></span><br><span class="line"><span class="number">8</span></span><br><span class="line"><span class="number">13</span></span><br><span class="line"><span class="number">14</span></span><br><span class="line"><span class="number">15</span></span><br></pre></td></tr></table></figure>
+
+<p>从代码上进行分析，当启动了三个线程，每个线程应该都是循环5次得出1到15的结果，但是从输出的结果，就可以看到有两个2输出，出现像这种情况表明这个方法根本就不是线程安全的。我们可以这样理解：在每个进程的内存空间中都会有一块特殊的公共区域，通常称为<strong>堆（内存）</strong>，之所以会输出两个2，是因为进程内的所有线程都可以访问到该区域，当第一个线程已经获得2这个数了，还没来得及输出，下一个线程在这段时间的空隙获得了2这个值，故输出时会输出2的值。</p>
+<h3 id="三、线程安全问题"><a href="#三、线程安全问题" class="headerlink" title="三、线程安全问题"></a>三、线程安全问题</h3><p>要考虑线程安全问题，就需要先考虑<strong>Java并发的三大基本特性</strong>：<strong>原子性</strong>、<strong>可见性</strong>以及<strong>有序性</strong>。</p>
+<h4 id="3-1-原子性"><a href="#3-1-原子性" class="headerlink" title="3.1 原子性"></a>3.1 原子性</h4><p>原子性是指在一个操作中就是cpu不可以在中途暂停然后再调度，即不被中断操作，要不全部执行完成，要不都不执行。就好比转账，从账户A向账户B转1000元，那么必然包括2个操作：从账户A减去1000元，往账户B加上1000元。2个操作必须全部完成。</p>
+<p>那程序中原子性指的是最小的操作单元，比如自增操作，它本身其实并不是原子性操作，分了3步的，包括读取变量的原始值、进行加1操作、写入工作内存。所以在多线程中，有可能一个线程还没自增完，可能才执行到第二部，另一个线程就已经读取了值，导致结果错误。那如果我们能保证自增操作是一个原子性的操作，那么就能保证其他线程读取到的一定是自增后的数据。</p>
+<h4 id="3-2-可见性"><a href="#3-2-可见性" class="headerlink" title="3.2 可见性"></a>3.2 可见性</h4><p>当多个线程访问同一个变量时，一个线程修改了这个变量的值，其他线程能够立即看得到修改的值。</p>
+<p> 若两个线程在不同的cpu，那么线程1改变了i的值还没刷新到主存，线程2又使用了i，那么这个i值肯定还是之前的，线程1对变量的修改线程没看到这就是可见性问题。</p>
+<h4 id="3-3-有序性"><a href="#3-3-有序性" class="headerlink" title="3.3 有序性"></a>3.3 有序性</h4><p>程序执行的顺序按照代码的先后顺序执行，在多线程编程时就得考虑这个问题。</p>
+<h3 id="案例：抢票"><a href="#案例：抢票" class="headerlink" title="案例：抢票"></a>案例：抢票</h3><p>当多个线程同时共享，同一个全局变量或静态变量（即局部变量不会），做写的操作时，可能会发生数据冲突问题，也就是线程安全问题。但是做读操作是不会发生数据冲突问题。</p>
+<p>Consumer类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.company;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Consumer</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> ticket = <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">while</span>(ticket&gt;<span class="number">0</span>)&#123;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot;售卖第&quot;</span> + (<span class="number">100</span>-ticket+<span class="number">1</span>) + <span class="string">&quot;张票&quot;</span>);</span><br><span class="line">            ticket--;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>主类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.company;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadSafeProblem</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        Consumer abc = <span class="keyword">new</span> Consumer();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">new</span> Thread(abc, <span class="string">&quot;窗口1&quot;</span>).start();</span><br><span class="line">        <span class="keyword">new</span> Thread(abc, <span class="string">&quot;窗口2&quot;</span>).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<img src="https://tva1.sinaimg.cn/large/0081Kckwgy1glphqevjy9j30jk08kwff.jpg" style="zoom:67%;" />
+
+<p>从输出结果来看，售票窗口买票出现了计票的问题，这就是线程安全出现问题了。</p>
+<h3 id="四、如何确保线程安全？"><a href="#四、如何确保线程安全？" class="headerlink" title="四、如何确保线程安全？"></a>四、如何确保线程安全？</h3><p>解决办法：使用多线程之间使用<strong>关键字synchronized</strong>、或者使用<strong>锁（lock）</strong>，或者<strong>volatile关键字</strong>。</p>
+<p><strong>①synchronized</strong>（自动锁，锁的创建和释放都是自动的）；</p>
+<p><strong>②lock 手动锁</strong>（手动指定锁的创建和释放）。</p>
+<p><strong>③volatile关键字</strong></p>
+<p>为什么能解决？如果可能会发生数据冲突问题(线程不安全问题)，只能让当前一个线程进行执行。代码执行完成后释放锁，然后才能让其他线程进行执行。这样的话就可以解决线程不安全问题。</p>
+<h3 id="4-1-synchronized关键字"><a href="#4-1-synchronized关键字" class="headerlink" title="4.1 synchronized关键字"></a>4.1 synchronized关键字</h3><h4 id="4-1-1-同步代码块"><a href="#4-1-1-同步代码块" class="headerlink" title="4.1.1 同步代码块"></a>4.1.1 同步代码块</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">synchronized</span>(同一个锁)&#123;</span><br><span class="line">  <span class="comment">//可能会发生线程冲突问题</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>将可能会发生线程安全问题地代码，给包括起来，也称为<strong>同步代码块</strong>。synchronized使用的锁可以是对象锁也可以是静态资源，如×××.class，只有持有锁的线程才能执行同步代码块中的代码。没持有锁的线程即使获取cpu的执行权，也进不去。</p>
+<p><strong>锁的释放</strong>是在synchronized同步代码执行完毕后自动释放。</p>
+<p><strong>同步的前提：</strong></p>
+<p>1，必须要有两个或者两个以上的线程 ，如果小于2个线程，则没有用，且还会消耗性能(获取锁，释放锁)</p>
+<p>2，必须是多个线程使用同一个锁 </p>
+<p><strong>弊端</strong>：多个线程需要判断锁，较为消耗资源、抢锁的资源。</p>
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadSafeProblem</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Consumer abc = <span class="keyword">new</span> Consumer();</span><br><span class="line">        <span class="comment">// 注意要使用同一个abc变量作为thread的参数，</span></span><br><span class="line">        <span class="comment">// 如果你使用了两个Consumer对象，那么就不会共享ticket了，就自然不会出现线程安全问题</span></span><br><span class="line">        <span class="keyword">new</span> Thread(abc,<span class="string">&quot;窗口1&quot;</span>).start();</span><br><span class="line">        <span class="keyword">new</span> Thread(abc,<span class="string">&quot;窗口2&quot;</span>).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Consumer</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> ticket = <span class="number">100</span>;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (ticket &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (Consumer.class) &#123;</span><br><span class="line">                <span class="keyword">if</span> (ticket &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                    System.out.println(Thread.currentThread().getName() + <span class="string">&quot;售卖第&quot;</span> + (<span class="number">100</span>-ticket+<span class="number">1</span>) + <span class="string">&quot;张票&quot;</span>);</span><br><span class="line">                    ticket--;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-1-2-同步函数"><a href="#4-1-2-同步函数" class="headerlink" title="4.1.2 同步函数"></a>4.1.2 同步函数</h4><p>就是将synchronized加在方法上。</p>
+<p>分为两种：</p>
+<p>第一种是<strong>非静态同步函数</strong>，即方法是非静态的，使用的<strong>this对象锁</strong>，如下代码所示</p>
+<p>第二种是<strong>静态同步函数</strong>，即方法是用static修饰的，使用的锁是<strong>当前类的class文件（xxx.class）</strong>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">sale</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (ticket &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot;售卖第&quot;</span> + (<span class="number">100</span>-ticket+<span class="number">1</span>) + <span class="string">&quot;张票&quot;</span>);</span><br><span class="line">            ticket--;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-1-3-多线程死锁线程"><a href="#4-1-3-多线程死锁线程" class="headerlink" title="4.1.3 多线程死锁线程"></a>4.1.3 多线程死锁线程</h4><p>如下代码所示，</p>
+<p>线程t1，运行后在同步代码块中需要oj对象锁，，运行到sale方法时需要this对象锁</p>
+<p>线程t2，运行后需要调用sale方法，需要先获取this锁，再获取oj对象锁</p>
+<p>那这样就会造成，两个线程相互等待对方释放锁。就造成了死锁情况。简单来说就是：</p>
+<p>同步中嵌套同步,导致锁无法释放。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ThreadTrain3</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> count = <span class="number">100</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">boolean</span> flag = <span class="keyword">true</span>;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> Object oj = <span class="keyword">new</span> Object();</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (flag) &#123;</span><br><span class="line">			<span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">				<span class="keyword">synchronized</span> (oj) &#123;</span><br><span class="line">					sale();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line"> </span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">				sale();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"> </span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">sale</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">// 前提 多线程进行使用、多个线程只能拿到一把锁。</span></span><br><span class="line">		<span class="comment">// 保证只能让一个线程 在执行 缺点效率降低</span></span><br><span class="line">		<span class="keyword">synchronized</span> (oj) &#123;</span><br><span class="line">			<span class="keyword">if</span> (count &gt; <span class="number">0</span>) &#123;</span><br><span class="line">				<span class="keyword">try</span> &#123;</span><br><span class="line">					Thread.sleep(<span class="number">50</span>);</span><br><span class="line">				&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">					<span class="comment">// <span class="doctag">TODO:</span> handle exception</span></span><br><span class="line">				&#125;</span><br><span class="line">				System.out.println(Thread.currentThread().getName() + <span class="string">&quot;,出售第&quot;</span> + (<span class="number">100</span> - count + <span class="number">1</span>) + <span class="string">&quot;票&quot;</span>);</span><br><span class="line">				count--;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadDemo3</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">		ThreadTrain3 threadTrain1 = <span class="keyword">new</span> ThreadTrain3();</span><br><span class="line">		Thread t1 = <span class="keyword">new</span> Thread(threadTrain1, <span class="string">&quot;①号窗口&quot;</span>);</span><br><span class="line">		Thread t2 = <span class="keyword">new</span> Thread(threadTrain1, <span class="string">&quot;②号窗口&quot;</span>);</span><br><span class="line">		t1.start();</span><br><span class="line">		Thread.sleep(<span class="number">40</span>);</span><br><span class="line">		threadTrain1.flag = <span class="keyword">false</span>;</span><br><span class="line">		t2.start();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-Lock"><a href="#4-2-Lock" class="headerlink" title="4.2 Lock"></a>4.2 Lock</h3><p>可以视为synchronized的增强版，提供了更灵活的功能。该接口提供了限时锁等待、锁中断、锁尝试等功能。synchronized实现的同步代码块，它的锁是自动加的，且当执行完同步代码块或者抛出异常后，锁的释放也是自动的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Lock l = ...;</span><br><span class="line">l.lock();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  <span class="comment">// access the resource protected by this lock</span></span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">  l.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是Lock锁是需要手动去加锁和释放锁，所以Lock相比于synchronized更加的灵活。且还提供了更多的功能比如说</p>
+<p>tryLock()方法会尝试获取锁，如果锁不可用则返回false，如果锁是可以使用的，那么就直接获取锁且返回true，官方代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Lock lock = ...;</span><br><span class="line"> <span class="keyword">if</span> (lock.tryLock()) &#123;</span><br><span class="line">   <span class="keyword">try</span> &#123;</span><br><span class="line">     <span class="comment">// manipulate protected state</span></span><br><span class="line">   &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">     lock.unlock();</span><br><span class="line">   &#125;</span><br><span class="line"> &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">   <span class="comment">// perform alternative actions</span></span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 使用ReentrantLock类实现同步</span></span><br><span class="line"><span class="comment"> * */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyReenrantLock</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">	<span class="comment">//向上转型</span></span><br><span class="line">	<span class="keyword">private</span> Lock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">//上锁</span></span><br><span class="line">		lock.lock();</span><br><span class="line">		<span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">			System.out.println(<span class="string">&quot;当前线程名： &quot;</span>+ Thread.currentThread().getName()+<span class="string">&quot; ,i = &quot;</span>+i);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//释放锁</span></span><br><span class="line">		lock.unlock();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyLock</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		MyReenrantLock myReenrantLock =  <span class="keyword">new</span> MyReenrantLock();</span><br><span class="line">		Thread thread1 = <span class="keyword">new</span> Thread(myReenrantLock);</span><br><span class="line">		Thread thread2 = <span class="keyword">new</span> Thread(myReenrantLock);</span><br><span class="line">		Thread thread3 = <span class="keyword">new</span> Thread(myReenrantLock);</span><br><span class="line">		thread1.start();</span><br><span class="line">		thread2.start();</span><br><span class="line">		thread3.start();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<img src="https://tva1.sinaimg.cn/large/0081Kckwgy1glpivib4qpj30b60a8q2v.jpg" style="zoom:80%;" />
+
+<p>由此我们可以看出，只有当当前线程打印完毕后，其他的线程才可继续打印，线程打印的数据是分组打印，因为当前线程持有锁，但线程之间的打印顺序是随机的。</p>
+<p>即调用**lock.lock()**代码的线程就持有了“对象监视器”，其他线程只有等待锁被释放再次争抢。</p>
+<h3 id="4-3-volatile关键字"><a href="#4-3-volatile关键字" class="headerlink" title="4.3 volatile关键字"></a>4.3 volatile关键字</h3><p>先来看一段错误的代码示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ThreadVolatileDemo</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">boolean</span> flag = <span class="keyword">true</span>;</span><br><span class="line"> </span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;子线程开始执行&quot;</span>);</span><br><span class="line">		<span class="keyword">while</span> (flag) &#123;</span><br><span class="line">		&#125;</span><br><span class="line">		System.out.println(<span class="string">&quot;子线程执行结束...&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setFlag</span><span class="params">(<span class="keyword">boolean</span> flag)</span></span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.flag=flag;</span><br><span class="line">	&#125;</span><br><span class="line"> </span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadVolatile</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">              ThreadVolatileDemo threadVolatileDemo = <span class="keyword">new</span> ThreadVolatileDemo();</span><br><span class="line">              threadVolatileDemo.start();</span><br><span class="line">              Thread.sleep(<span class="number">3000</span>);</span><br><span class="line">              threadVolatileDemo.setFlag(<span class="keyword">false</span>);</span><br><span class="line">              System.out.println(<span class="string">&quot;flag已被修改为false!&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwly1glpm1eai2pj30hd0343yc.jpg"></p>
+<p>虽然flag已被修改，但是子线程依然在执行，这里产生的原因就是<strong>Java内存模型（JMM）</strong>导致的。</p>
+<p>由于主线程休眠了3秒，所以子线程没有意外的话是一定会被执行run方法的。而当子线程由于调用start方法而执行run方法时，会将flag这个共享变量拷贝一份副本存到线程的本地内存中。此时线程中的flag为true，即使主线程在休眠后修改了flag值为false，子线程也不会知道，即不会修改自己副本的flag值。所以这就导致了该问题的出现。</p>
+<p>​        <strong>注意</strong>：在测试时，一定要让主线程进行sleep或其他耗时操作，如果没有这步操作，很有可能在子线程执行run方法而拷贝共享变量到线程本地内存之前，主线程就已经修改了flag值。</p>
+<p>这里再来介绍一下<strong>Java内存模型</strong>吧！！!</p>
+<p>在<strong>Java内存模型</strong>规定了所有的变量（这里的变量是指成员变量，静态字段等但是不包括局部变量和方法参数，因为这是线程私有的）都存储在<strong>主内存</strong>中，每条线程还有自己的<strong>工作内存</strong>，线程的工作内存中拷贝了该线程使用到的主内存中的变量（只是副本，从主内存中拷贝了一份，放到了线程的本地内存中），<strong>线程对变量的所有操作都必须在工作内存中进行，而不能直接读写主内存。</strong> 不同的线程之间也无法直接访问对方工作内存中的变量，<strong>线程间变量的传递均需要自己的工作内存和主存之间进行数据同步进行</strong>。</p>
+<p>而JMM就作用于工作内存和主存之间数据同步过程。他规定了如何做数据同步以及什么时候做数据同步。</p>
+<p><img src="https://tva1.sinaimg.cn/large/0081Kckwly1glpm9qzezrj30ce0b73z4.jpg"></p>
+<ol>
+<li><p>首先要将共享变量从主内存拷贝到线程自己的工作内存空间，工作内存中存储着主内存中的变量副本拷贝；</p>
+</li>
+<li><p>线程对副本变量进行操作，（不能直接操作主内存）；</p>
+</li>
+<li><p>操作完成后通过JMM 将线程的共享变量副本与主内存进行数据的同步，将数据写入主内存中；</p>
+</li>
+<li><p>不同的线程间无法访问对方的工作内存，线程间的通信(传值)必须通过主内存来完成。</p>
+</li>
+</ol>
+<p>当多个线程同时访问一个数据的时候，可能本地内存没有及时刷新到主内存，所以就会发生线程安全问题</p>
+<p><strong>JMM是在线程调run方法的时候才将共享变量写到自己的线程本地内存中去的，而不是在调用start方法的时候。</strong></p>
+<h3 id="解决办法："><a href="#解决办法：" class="headerlink" title="解决办法："></a>解决办法：</h3><p>当出现这种问题时，就可以使用<strong>Volatile关键字</strong>进行解决。</p>
+<p><strong>Volatile 关键字的作用</strong>是变量在多个线程之间可见。使用Volatile关键字将解决线程之间可见性，<strong>强制线程每次读取该值的时候都去“主内存”中取值</strong>。</p>
+<p>只需要在flag属性上加上该关键字即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> flag = <span class="keyword">true</span>;</span><br></pre></td></tr></table></figure>
+
+<p>子线程每次都不是读取的线程本地内存中的副本变量了，而是直接读取主内存中的属性值。</p>
+<pre><code>     volatile虽然**具备可见性**，但是**不具备原子性**。
+</code></pre>
+<h3 id="4-4-synchronized、volatile和Lock之间的区别"><a href="#4-4-synchronized、volatile和Lock之间的区别" class="headerlink" title="4.4 synchronized、volatile和Lock之间的区别"></a>4.4 synchronized、volatile和Lock之间的区别</h3><hr>
+<p><strong>synochronizd和volatile关键字区别：</strong></p>
+<p>1）<strong>volatile关键字</strong>解决的是变量在多个线程之间的可见性；而<strong>sychronized关键字</strong>解决的是多个线程之间访问共享资源的同步性。</p>
+<p><strong>tip：</strong> final关键字也能实现可见性：被final修饰的字段在构造器中一旦初始化完成，并且构造器没有把**”this”**的引用传递出去（this引用逃逸是一件很危险的事情，其它线程有可能通过这个引用访问到了”初始化一半”的对象），那在其他线程中就能看见final；</p>
+<p>2）<strong>volatile</strong>只能用于修饰变量，而<strong>synchronized</strong>可以修饰方法，以及代码块。（<strong>volatile</strong>是线程同步的轻量级实现，所以<strong>volatile</strong>性能比<strong>synchronized</strong>要好，并且随着JDK新版本的发布，<strong>sychronized关键字</strong>在执行上得到很大的提升，在开发中使用<strong>synchronized关键字</strong>的比率还是比较大）；</p>
+<p>3）多线程访问<strong>volatile</strong>不会发生阻塞，而<strong>sychronized</strong>会出现阻塞；</p>
+<p>4）<strong>volatile</strong>能保证变量在多个线程之间的可见性，但不能保证原子性；而<strong>sychronized</strong>可以保证原子性，也可以间接保证可见性，因为它会将私有内存和公有内存中的数据做同步。</p>
+<p><strong>线程安全</strong>包含<strong>原子性</strong>和<strong>可见性</strong>两个方面。</p>
+<p>对于用<strong>volatile</strong>修饰的变量，JVM虚拟机只是保证从主内存加载到线程工作内存的值是最新的。</p>
+<p><strong>一句话说明volatile的作用</strong>：实现变量在多个线程之间的可见性。</p>
+<hr>
+<p><strong>synchronized和lock区别：</strong></p>
+<p>1）<strong>Lock</strong>是一个接口，而<strong>synchronized</strong>是Java中的关键字，<strong>synchronized</strong>是内置的语言实现；</p>
+<p>2）<strong>synchronized</strong>在发生异常时，会自动释放线程占有的锁，因此不会导致死锁现象发生；而<strong>Lock</strong>在发生异常时，如果没有主动通过<strong>unLock()<strong>去释放锁，则很可能造成死锁现象，因此使用</strong>Lock</strong>时需要在<strong>finally</strong>块中释放锁；</p>
+<p>3）<strong>Lock</strong>可以让等待锁的线程响应中断，而<strong>synchronized</strong>却不行，使用<strong>synchronized</strong>时，等待的线程会一直等待下去，不能够响应中断；</p>
+<p>4）通过<strong>Lock</strong>可以知道有没有成功获取锁，而<strong>synchronized</strong>却无法办到。</p>
+<p>5）<strong>Lock</strong>可以提高多个线程进行读操作的效率（读写锁）。</p>
+<p><strong>在性能上来说</strong>，如果竞争资源不激烈，两者的性能是差不多的，而当竞争资源非常激烈时（即有大量线程同时竞争），此时<strong>Lock</strong>的性能要远远优于<strong>synchronized</strong>。所以说，在具体使用时要根据适当情况选择。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/03/16/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/" data-id="ckmbkxdvx0012edez4exq0cif" data-title="一文教会你什么线程安全以及如何实现线程安全" class="article-share-link">Share</a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8-Java%E5%B9%B6%E5%8F%91-Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B-synchronized-volatile-Lock/" rel="tag">线程安全 Java并发 Java内存模型 synchronized volatile Lock</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/03/16/Java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6%20list-set-map%20/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Java集合框架史上最详解（list set 以及map）
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/03/16/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">希尔排序算法（基于Java实现）</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BD%8D%E6%98%A0%E5%B0%84-%E6%8E%92%E5%BA%8F-%E6%8E%92%E9%87%8D/" rel="tag">位映射 排序 排重</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">冒泡排序算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">希尔排序算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BD%92%E5%B9%B6%E7%AE%97%E6%B3%95/" rel="tag">归并算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">快速排序算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8F%92%E5%85%A5%E7%AE%97%E6%B3%95/" rel="tag">插入算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84-%E5%BE%AA%E7%8E%AF%E9%98%9F%E5%88%97/" rel="tag">数组 循环队列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84-%E9%98%9F%E5%88%97/" rel="tag">数组 队列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84-%E9%A1%BA%E5%BA%8F%E6%A0%88/" rel="tag">数组 顺序栈</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%A1%B6%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">桶排序算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8-Java%E5%B9%B6%E5%8F%91-Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B-synchronized-volatile-Lock/" rel="tag">线程安全 Java并发 Java内存模型 synchronized volatile Lock</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%80%89%E6%8B%A9%E7%AE%97%E6%B3%95/" rel="tag">选择算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-%E9%98%9F%E5%88%97/" rel="tag">链表 队列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6-list-set-map/" rel="tag">集合框架 list set map</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/%E4%BD%8D%E6%98%A0%E5%B0%84-%E6%8E%92%E5%BA%8F-%E6%8E%92%E9%87%8D/" style="font-size: 10px;">位映射 排序 排重</a> <a href="/tags/%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">冒泡排序算法</a> <a href="/tags/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">希尔排序算法</a> <a href="/tags/%E5%BD%92%E5%B9%B6%E7%AE%97%E6%B3%95/" style="font-size: 10px;">归并算法</a> <a href="/tags/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">快速排序算法</a> <a href="/tags/%E6%8F%92%E5%85%A5%E7%AE%97%E6%B3%95/" style="font-size: 10px;">插入算法</a> <a href="/tags/%E6%95%B0%E7%BB%84-%E5%BE%AA%E7%8E%AF%E9%98%9F%E5%88%97/" style="font-size: 10px;">数组 循环队列</a> <a href="/tags/%E6%95%B0%E7%BB%84-%E9%98%9F%E5%88%97/" style="font-size: 10px;">数组 队列</a> <a href="/tags/%E6%95%B0%E7%BB%84-%E9%A1%BA%E5%BA%8F%E6%A0%88/" style="font-size: 10px;">数组 顺序栈</a> <a href="/tags/%E6%A1%B6%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">桶排序算法</a> <a href="/tags/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8-Java%E5%B9%B6%E5%8F%91-Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B-synchronized-volatile-Lock/" style="font-size: 10px;">线程安全 Java并发 Java内存模型 synchronized volatile Lock</a> <a href="/tags/%E9%80%89%E6%8B%A9%E7%AE%97%E6%B3%95/" style="font-size: 10px;">选择算法</a> <a href="/tags/%E9%93%BE%E8%A1%A8-%E9%98%9F%E5%88%97/" style="font-size: 10px;">链表 队列</a> <a href="/tags/%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6-list-set-map/" style="font-size: 10px;">集合框架 list set map</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/03/16/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/">我的第一篇博客</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/16/%E9%80%89%E6%8B%A9%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">选择排序算法（基于Java实现）</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/16/Java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6%20list-set-map%20/">Java集合框架史上最详解（list set 以及map）</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/16/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/">一文教会你什么线程安全以及如何实现线程安全</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/16/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">希尔排序算法（基于Java实现）</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2021 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>冒泡排序算法（基于Java实现） | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="冒泡算法原理及代码实现：一、冒泡算法的原理冒泡算法只会操作相邻的两个数据。每次冒泡操作都会对相邻的两个元素进行比较，看是否满足大小关系要求。如果不满足就让它俩互换。这样一来，一次冒泡会让至少一个元素移动到它应该在的位置，重复n次，就完成了n个数据的排序工作。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="冒泡排序算法（基于Java实现）">
+<meta property="og:url" content="http://example.com/2021/03/16/%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="冒泡算法原理及代码实现：一、冒泡算法的原理冒泡算法只会操作相邻的两个数据。每次冒泡操作都会对相邻的两个元素进行比较，看是否满足大小关系要求。如果不满足就让它俩互换。这样一来，一次冒泡会让至少一个元素移动到它应该在的位置，重复n次，就完成了n个数据的排序工作。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwgy1glnrwnyu2xj30vq0kl419.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwgy1glxmfdigjuj30vq0ktjtw.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1glns8i1e16j30vq0ivjss.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwly1glnu0xedajj30vq08bdgj.jpg">
+<meta property="article:published_time" content="2021-03-16T05:28:54.933Z">
+<meta property="article:modified_time" content="2021-03-16T05:28:54.933Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="冒泡排序算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/0081Kckwgy1glnrwnyu2xj30vq0kl419.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-冒泡排序算法" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2021/03/16/%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" class="article-date">
+  <time class="dt-published" datetime="2021-03-16T05:28:54.933Z" itemprop="datePublished">2021-03-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      冒泡排序算法（基于Java实现）
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="冒泡算法原理及代码实现："><a href="#冒泡算法原理及代码实现：" class="headerlink" title="冒泡算法原理及代码实现："></a>冒泡算法原理及代码实现：</h3><h4 id="一、冒泡算法的原理"><a href="#一、冒泡算法的原理" class="headerlink" title="一、冒泡算法的原理"></a>一、冒泡算法的原理</h4><p>冒泡算法只会操作相邻的两个数据。每次冒泡操作都会对相邻的两个元素进行比较，看是否满足大小关系要求。如果不满足就让它俩互换。这样一来，一次冒泡会让至少一个元素移动到它应该在的位置，重复n次，就完成了n个数据的排序工作。</p>
+<span id="more"></span>
+
+<p>例如，我们要对一组数据4，5，6，3，2，1从小到大进行排序。第一次的冒泡操作的详细过程就是这样：</p>
+<img src="https://tva1.sinaimg.cn/large/0081Kckwgy1glnrwnyu2xj30vq0kl419.jpg" style="zoom:67%;" />
+
+<p>可以看出，经过一次冒泡操作之后，6个元素已经存储在正确的位置上。要想完成所有数据的排序，我们只要进行6次这样的冒泡操作就行了。</p>
+<img src="https://tva1.sinaimg.cn/large/0081Kckwgy1glxmfdigjuj30vq0ktjtw.jpg" style="zoom:67%;" />
+
+<p>实际上，上述的冒泡过程是可以优化的。当某次冒泡操作已经没有数据交换时，说明已经达到完全有序，不用再继续执行后续的冒泡操作。再比如下面这个例子，这里面给6个元素排序，只需要4次冒泡操作就行了。</p>
+<img src="https://tva1.sinaimg.cn/large/0081Kckwly1glns8i1e16j30vq0ivjss.jpg" style="zoom:67%;" />
+
+<h4 id="二、冒泡排序算法的代码实现"><a href="#二、冒泡排序算法的代码实现" class="headerlink" title="二、冒泡排序算法的代码实现"></a>二、冒泡排序算法的代码实现</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.company;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BubbleSort</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//冒泡算法，a表示需要排序的数组</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span>[] bubbleSort(<span class="keyword">int</span>[] a)&#123;</span><br><span class="line">       <span class="keyword">int</span> len = a.length;</span><br><span class="line">       <span class="keyword">if</span>(len == <span class="number">0</span> || len == <span class="number">1</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> a;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;len; i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; len-i-<span class="number">1</span>; ++j)&#123;</span><br><span class="line">                <span class="keyword">if</span>(a[j] &gt; a[j+<span class="number">1</span>])&#123;</span><br><span class="line">                    <span class="comment">//交换</span></span><br><span class="line">                    <span class="keyword">int</span> tmp = a[j];</span><br><span class="line">                    a[j] = a[j+<span class="number">1</span>];</span><br><span class="line">                    a[j+<span class="number">1</span>] = tmp;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> a;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span>[] a = <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;<span class="number">3</span>,<span class="number">5</span>, <span class="number">4</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">6</span>&#125;;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;a.length; i++)&#123;</span><br><span class="line">            System.out.println(a[i]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        BubbleSort b = <span class="keyword">new</span> BubbleSort();</span><br><span class="line">        b.bubbleSort(a);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;a.length; i++)&#123;</span><br><span class="line">            System.out.println(a[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(Arrays.toString(a));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出的结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">3</span></span><br><span class="line"><span class="number">5</span></span><br><span class="line"><span class="number">4</span></span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">6</span></span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">3</span></span><br><span class="line"><span class="number">4</span></span><br><span class="line"><span class="number">5</span></span><br><span class="line"><span class="number">6</span></span><br><span class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]</span><br></pre></td></tr></table></figure>
+
+<p>改进的冒泡算法代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> Sort;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BubbleSort</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//冒泡算法，a表示需要排序的数组</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span>[] bubbleSort(<span class="keyword">int</span>[] a)&#123;</span><br><span class="line">       <span class="keyword">int</span> len = a.length;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">boolean</span> flag = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;len-<span class="number">1</span>; i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; len-i-<span class="number">1</span>; ++j)&#123;</span><br><span class="line">                <span class="keyword">if</span>(a[j] &gt; a[j+<span class="number">1</span>])&#123;</span><br><span class="line">                    <span class="comment">//交换</span></span><br><span class="line">                    flag = <span class="keyword">true</span>;</span><br><span class="line">                    <span class="keyword">int</span> tmp = a[j];</span><br><span class="line">                    a[j] = a[j+<span class="number">1</span>];</span><br><span class="line">                    a[j+<span class="number">1</span>] = tmp;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">&quot;第&quot;</span>+(i+<span class="number">1</span>)+<span class="string">&quot;趟排序后的数组&quot;</span>);</span><br><span class="line">            System.out.println(Arrays.toString(a));</span><br><span class="line">            <span class="keyword">if</span>(!flag)&#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                flag = <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> a;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span>[] a = <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">7</span>, <span class="number">6</span>&#125;;</span><br><span class="line"><span class="comment">//        for(int i=0; i&lt;a.length; i++)&#123;</span></span><br><span class="line"><span class="comment">//            System.out.println(a[i]);</span></span><br><span class="line"><span class="comment">//        &#125;</span></span><br><span class="line"></span><br><span class="line">        BubbleSort b = <span class="keyword">new</span> BubbleSort();</span><br><span class="line">        b.bubbleSort(a);</span><br><span class="line"><span class="comment">//        for(int i=0; i&lt;a.length; i++)&#123;</span></span><br><span class="line"><span class="comment">//            System.out.println(a[i]);</span></span><br><span class="line"><span class="comment">//        &#125;</span></span><br><span class="line">        System.out.println(Arrays.toString(a));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>输出的结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">第1趟排序后的数组</span><br><span class="line">[1, 2, 3, 6, 7]</span><br><span class="line">第2趟排序后的数组</span><br><span class="line">[1, 2, 3, 6, 7]</span><br><span class="line">[1, 2, 3, 6, 7]</span><br></pre></td></tr></table></figure>
+
+<p>冒泡的过程只涉及到相邻数据的交换操作，只需要常量级的临时空间，所以它的<strong>空间复杂度为O(1)<strong>，是一个</strong>原地排序算法</strong>；</p>
+<p>在冒泡排序中，只有交换才可以改变两个元素的前后顺序。为了保证冒泡排序算法的稳定性，当有相邻的两个元素大小相等的时候，我们不做交换，相同大小的数据在排序前后不会改变顺序，<strong>所以冒泡算法是稳定的排序算法</strong>；</p>
+<p>冒泡算法的时间复杂度是多少呢？</p>
+<p>在最好的情况下，要排序的数据已经有序了，我们只需要进行一次冒泡操作，就可以结束了，所以最好的情况时间复杂复杂度是O(n)。而最坏的情况是，要排序的数据刚好是逆序排列的，则我们需要进行n次的冒泡操作，所以最坏的时间复杂度为O(n^2) 。根据平均复杂度分析，所以<strong>冒泡算法的时间复杂度为O(n^2)</strong> 。</p>
+<img src="https://tva1.sinaimg.cn/large/0081Kckwly1glnu0xedajj30vq08bdgj.jpg" style="zoom:67%;" />
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/03/16/%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" data-id="ckmbkxdv70001edez70rc9f4g" data-title="冒泡排序算法（基于Java实现）" class="article-share-link">Share</a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">冒泡排序算法</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/03/16/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          快速排序算法（基于Java实现）
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/03/16/%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E5%AE%9E%E7%8E%B0%E5%BE%AA%E7%8E%AF%E9%98%9F%E5%88%97/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">基于数组实现循环队列（基于Java实现）</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BD%8D%E6%98%A0%E5%B0%84-%E6%8E%92%E5%BA%8F-%E6%8E%92%E9%87%8D/" rel="tag">位映射 排序 排重</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">冒泡排序算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">希尔排序算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BD%92%E5%B9%B6%E7%AE%97%E6%B3%95/" rel="tag">归并算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">快速排序算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8F%92%E5%85%A5%E7%AE%97%E6%B3%95/" rel="tag">插入算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84-%E5%BE%AA%E7%8E%AF%E9%98%9F%E5%88%97/" rel="tag">数组 循环队列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84-%E9%98%9F%E5%88%97/" rel="tag">数组 队列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84-%E9%A1%BA%E5%BA%8F%E6%A0%88/" rel="tag">数组 顺序栈</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%A1%B6%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">桶排序算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8-Java%E5%B9%B6%E5%8F%91-Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B-synchronized-volatile-Lock/" rel="tag">线程安全 Java并发 Java内存模型 synchronized volatile Lock</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%80%89%E6%8B%A9%E7%AE%97%E6%B3%95/" rel="tag">选择算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-%E9%98%9F%E5%88%97/" rel="tag">链表 队列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6-list-set-map/" rel="tag">集合框架 list set map</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/%E4%BD%8D%E6%98%A0%E5%B0%84-%E6%8E%92%E5%BA%8F-%E6%8E%92%E9%87%8D/" style="font-size: 10px;">位映射 排序 排重</a> <a href="/tags/%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">冒泡排序算法</a> <a href="/tags/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">希尔排序算法</a> <a href="/tags/%E5%BD%92%E5%B9%B6%E7%AE%97%E6%B3%95/" style="font-size: 10px;">归并算法</a> <a href="/tags/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">快速排序算法</a> <a href="/tags/%E6%8F%92%E5%85%A5%E7%AE%97%E6%B3%95/" style="font-size: 10px;">插入算法</a> <a href="/tags/%E6%95%B0%E7%BB%84-%E5%BE%AA%E7%8E%AF%E9%98%9F%E5%88%97/" style="font-size: 10px;">数组 循环队列</a> <a href="/tags/%E6%95%B0%E7%BB%84-%E9%98%9F%E5%88%97/" style="font-size: 10px;">数组 队列</a> <a href="/tags/%E6%95%B0%E7%BB%84-%E9%A1%BA%E5%BA%8F%E6%A0%88/" style="font-size: 10px;">数组 顺序栈</a> <a href="/tags/%E6%A1%B6%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">桶排序算法</a> <a href="/tags/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8-Java%E5%B9%B6%E5%8F%91-Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B-synchronized-volatile-Lock/" style="font-size: 10px;">线程安全 Java并发 Java内存模型 synchronized volatile Lock</a> <a href="/tags/%E9%80%89%E6%8B%A9%E7%AE%97%E6%B3%95/" style="font-size: 10px;">选择算法</a> <a href="/tags/%E9%93%BE%E8%A1%A8-%E9%98%9F%E5%88%97/" style="font-size: 10px;">链表 队列</a> <a href="/tags/%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6-list-set-map/" style="font-size: 10px;">集合框架 list set map</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/03/16/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/">我的第一篇博客</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/16/%E9%80%89%E6%8B%A9%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">选择排序算法（基于Java实现）</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/16/Java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6%20list-set-map%20/">Java集合框架史上最详解（list set 以及map）</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/16/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/">一文教会你什么线程安全以及如何实现线程安全</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/16/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">希尔排序算法（基于Java实现）</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2021 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>选择排序算法（基于Java实现） | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="选择排序算法原理及代码实现：一、选择排序算法的原理选择排序算法的实现思路有点类似插入排序，也分已排序区间和未排序区间。但是选择排序每次会从未排序区间中找到最小的元素，将其放到已排序区间的末尾。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="选择排序算法（基于Java实现）">
+<meta property="og:url" content="http://example.com/2021/03/16/%E9%80%89%E6%8B%A9%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="选择排序算法原理及代码实现：一、选择排序算法的原理选择排序算法的实现思路有点类似插入排序，也分已排序区间和未排序区间。但是选择排序每次会从未排序区间中找到最小的元素，将其放到已排序区间的末尾。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0081Kckwgy1glnvsu1vyjj30vq0ns41n.jpg">
+<meta property="article:published_time" content="2021-03-16T05:29:00.577Z">
+<meta property="article:modified_time" content="2021-03-16T05:29:00.577Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="选择算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/0081Kckwgy1glnvsu1vyjj30vq0ns41n.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-选择排序算法" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2021/03/16/%E9%80%89%E6%8B%A9%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" class="article-date">
+  <time class="dt-published" datetime="2021-03-16T05:29:00.577Z" itemprop="datePublished">2021-03-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      选择排序算法（基于Java实现）
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="选择排序算法原理及代码实现："><a href="#选择排序算法原理及代码实现：" class="headerlink" title="选择排序算法原理及代码实现："></a>选择排序算法原理及代码实现：</h3><h4 id="一、选择排序算法的原理"><a href="#一、选择排序算法的原理" class="headerlink" title="一、选择排序算法的原理"></a>一、选择排序算法的原理</h4><p>选择排序算法的实现思路有点类似插入排序，也分已排序区间和未排序区间。但是选择排序每次会从未排序区间中找到最小的元素，将其放到已排序区间的末尾。</p>
+<span id="more"></span>
+
+<img src="https://tva1.sinaimg.cn/large/0081Kckwgy1glnvsu1vyjj30vq0ns41n.jpg" style="zoom:67%;" />
+
+<h4 id="二、选择排序算法的代码实现"><a href="#二、选择排序算法的代码实现" class="headerlink" title="二、选择排序算法的代码实现"></a>二、选择排序算法的代码实现</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.company;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SelectionSort</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span>[] selectionSort(<span class="keyword">int</span>[] a)&#123;</span><br><span class="line">        <span class="keyword">if</span>(a.length &lt;= <span class="number">1</span>)&#123;</span><br><span class="line">            <span class="keyword">return</span> a;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i&lt;a.length-<span class="number">1</span>; i++)&#123;</span><br><span class="line">            <span class="keyword">int</span> minIdex = i;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j = i+<span class="number">1</span>; j&lt; a.length; j++)&#123;</span><br><span class="line">                <span class="comment">//找到最小数</span></span><br><span class="line">                <span class="keyword">if</span>(a[j] &lt; a[minIdex])&#123;</span><br><span class="line">                    <span class="comment">//保存最小数的索引</span></span><br><span class="line">                    minIdex = j;</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//如果一轮比较下来都没有变更最小值得索引则无需调换顺序</span></span><br><span class="line">            <span class="keyword">if</span>(i != minIdex)&#123;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">int</span> tmp = a[i];</span><br><span class="line">                a[i] = a[minIdex];</span><br><span class="line">                a[minIdex] = tmp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> a;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span>[] a = &#123;<span class="number">10</span>, <span class="number">9</span>, <span class="number">7</span>, <span class="number">4</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">8</span>&#125;;</span><br><span class="line">        System.out.println(<span class="string">&quot;之前的排序：&quot;</span>);</span><br><span class="line">        System.out.println(Arrays.toString(a));</span><br><span class="line"></span><br><span class="line">        selectionSort(a);</span><br><span class="line">        System.out.println(<span class="string">&quot;之后的排序：&quot;</span>);</span><br><span class="line">        System.out.println(Arrays.toString(a));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出的结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">之前的排序：</span><br><span class="line">[<span class="number">10</span>, <span class="number">9</span>, <span class="number">7</span>, <span class="number">4</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">8</span>]</span><br><span class="line">之后的排序：</span><br><span class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>]</span><br></pre></td></tr></table></figure>
+
+<p>选择排序的另一种代码写法，更容易理解和记忆。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> TestSort;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test_select</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">selectionSort</span><span class="params">(<span class="keyword">int</span>[] arr)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; arr.length - <span class="number">1</span>; i++)&#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">int</span> minIndex = i;</span><br><span class="line">            <span class="keyword">int</span> min = arr[i];</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j = i+<span class="number">1</span>; j &lt;arr.length; j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(min &gt; arr[j])&#123;</span><br><span class="line">                min = arr[j];<span class="comment">//重置min</span></span><br><span class="line">                minIndex = j;<span class="comment">//重置minIndex</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(minIndex != i) &#123;</span><br><span class="line">                arr[minIndex] = arr[i];</span><br><span class="line">                arr[i] = min;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span>[] arr = &#123;<span class="number">23</span>, <span class="number">43</span>, <span class="number">3</span>, <span class="number">32</span>, <span class="number">67</span>, <span class="number">78</span>, <span class="number">34</span>, <span class="number">56</span>&#125;;</span><br><span class="line">        System.out.println(<span class="string">&quot;排序前：&quot;</span>);</span><br><span class="line">        System.out.println(Arrays.toString(arr));</span><br><span class="line"></span><br><span class="line">        selectionSort(arr);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;排序后：&quot;</span>);</span><br><span class="line">        System.out.println(Arrays.toString(arr));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">排序前：</span><br><span class="line">[<span class="number">23</span>, <span class="number">43</span>, <span class="number">3</span>, <span class="number">32</span>, <span class="number">67</span>, <span class="number">78</span>, <span class="number">34</span>, <span class="number">56</span>]</span><br><span class="line">排序后：</span><br><span class="line">[<span class="number">3</span>, <span class="number">23</span>, <span class="number">32</span>, <span class="number">34</span>, <span class="number">43</span>, <span class="number">56</span>, <span class="number">67</span>, <span class="number">78</span>]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>首先，选择排序<strong>空间复杂度为 O(1)<strong>，是一种</strong>原地排序算法</strong>。选择排序的最好情况时间复杂度、最坏情况和平均情况**时间复杂度都为 O(n^2)**。</p>
+<p>选择排序是一种<strong>不稳定的排序算法</strong>。从我前面画的那张图中，你可以看出来，选择排序每次都要找剩余未排序元素中的最小值，并和前面的元素交换位置，这样破坏了稳定性。</p>
+<p>比如 5，8，5，2，9 这样一组数据，使用选择排序算法来排序的话，第一次找到最小元素 2，与第一个 5 交换位置，那第一个 5 和中间的 5 顺序就变了，所以就不稳定了。正是因此，相对于冒泡排序和插入排序，选择排序就稍微逊色了。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/03/16/%E9%80%89%E6%8B%A9%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" data-id="ckmbkxdvl000ledez23f84l7p" data-title="选择排序算法（基于Java实现）" class="article-share-link">Share</a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%80%89%E6%8B%A9%E7%AE%97%E6%B3%95/" rel="tag">选择算法</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/03/16/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          我的第一篇博客
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/03/16/Java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6%20list-set-map%20/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Java集合框架史上最详解（list set 以及map）</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BD%8D%E6%98%A0%E5%B0%84-%E6%8E%92%E5%BA%8F-%E6%8E%92%E9%87%8D/" rel="tag">位映射 排序 排重</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">冒泡排序算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">希尔排序算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BD%92%E5%B9%B6%E7%AE%97%E6%B3%95/" rel="tag">归并算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">快速排序算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8F%92%E5%85%A5%E7%AE%97%E6%B3%95/" rel="tag">插入算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84-%E5%BE%AA%E7%8E%AF%E9%98%9F%E5%88%97/" rel="tag">数组 循环队列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84-%E9%98%9F%E5%88%97/" rel="tag">数组 队列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84-%E9%A1%BA%E5%BA%8F%E6%A0%88/" rel="tag">数组 顺序栈</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%A1%B6%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="tag">桶排序算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8-Java%E5%B9%B6%E5%8F%91-Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B-synchronized-volatile-Lock/" rel="tag">线程安全 Java并发 Java内存模型 synchronized volatile Lock</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%80%89%E6%8B%A9%E7%AE%97%E6%B3%95/" rel="tag">选择算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8-%E9%98%9F%E5%88%97/" rel="tag">链表 队列</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6-list-set-map/" rel="tag">集合框架 list set map</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/%E4%BD%8D%E6%98%A0%E5%B0%84-%E6%8E%92%E5%BA%8F-%E6%8E%92%E9%87%8D/" style="font-size: 10px;">位映射 排序 排重</a> <a href="/tags/%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">冒泡排序算法</a> <a href="/tags/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">希尔排序算法</a> <a href="/tags/%E5%BD%92%E5%B9%B6%E7%AE%97%E6%B3%95/" style="font-size: 10px;">归并算法</a> <a href="/tags/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">快速排序算法</a> <a href="/tags/%E6%8F%92%E5%85%A5%E7%AE%97%E6%B3%95/" style="font-size: 10px;">插入算法</a> <a href="/tags/%E6%95%B0%E7%BB%84-%E5%BE%AA%E7%8E%AF%E9%98%9F%E5%88%97/" style="font-size: 10px;">数组 循环队列</a> <a href="/tags/%E6%95%B0%E7%BB%84-%E9%98%9F%E5%88%97/" style="font-size: 10px;">数组 队列</a> <a href="/tags/%E6%95%B0%E7%BB%84-%E9%A1%BA%E5%BA%8F%E6%A0%88/" style="font-size: 10px;">数组 顺序栈</a> <a href="/tags/%E6%A1%B6%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" style="font-size: 10px;">桶排序算法</a> <a href="/tags/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8-Java%E5%B9%B6%E5%8F%91-Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B-synchronized-volatile-Lock/" style="font-size: 10px;">线程安全 Java并发 Java内存模型 synchronized volatile Lock</a> <a href="/tags/%E9%80%89%E6%8B%A9%E7%AE%97%E6%B3%95/" style="font-size: 10px;">选择算法</a> <a href="/tags/%E9%93%BE%E8%A1%A8-%E9%98%9F%E5%88%97/" style="font-size: 10px;">链表 队列</a> <a href="/tags/%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6-list-set-map/" style="font-size: 10px;">集合框架 list set map</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/03/16/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/">我的第一篇博客</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/16/%E9%80%89%E6%8B%A9%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">选择排序算法（基于Java实现）</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/16/Java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6%20list-set-map%20/">Java集合框架史上最详解（list set 以及map）</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/16/%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8/">一文教会你什么线程安全以及如何实现线程安全</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/16/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">希尔排序算法（基于Java实现）</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2021 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
